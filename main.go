@@ -8,6 +8,7 @@ import (
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
+	"github.com/shirou/gopsutil/mem"
 )
 
 // Values updated via "go install -ldflags" parameters.
@@ -311,9 +312,54 @@ func demoLoad() {
 
 }
 
+func demoMem() {
+
+	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoMem()")
+
+	// mem.VirtualMemory()
+
+	virtualFormatString := "virtual[]: \n\tActive: %d\n\tAvailable: %d\n\tBuffers: %d\n\tCached: %d\n\tDirty: %d\n\tFree: %d\n\tInactive: %d\n\tPageTables: %d\n\tShared: %d\n\tSlab: %d\n\tSwapCached: %d\n\tTotal: %d\n\tUsed: %d\n\tUsedPercent: %f\n\tWired: %d\n\tWriteback: %d\n\tWritebackTmp: %d\n"
+
+	virtual, _ := mem.VirtualMemory()
+	fmt.Printf(virtualFormatString,
+		virtual.Active,
+		virtual.Available,
+		virtual.Buffers,
+		virtual.Cached,
+		virtual.Dirty,
+		virtual.Free,
+		virtual.Inactive,
+		virtual.PageTables,
+		virtual.Shared,
+		virtual.Slab,
+		virtual.SwapCached,
+		virtual.Total,
+		virtual.Used,
+		virtual.UsedPercent,
+		virtual.Wired,
+		virtual.Writeback,
+		virtual.WritebackTmp,
+	)
+
+	// mem.SwapMemory()
+
+	swapFormatString := "swap[]: \n\tFree: %d\n\tSin: %d\n\tSout: %d\n\tTotal: %d\n\tUsed: %d\n\tUsedPercent: %f\n"
+
+	swap, _ := mem.SwapMemory()
+	fmt.Printf(swapFormatString,
+		swap.Free,
+		swap.Sin,
+		swap.Sout,
+		swap.Total,
+		swap.Used,
+		swap.UsedPercent,
+	)
+}
+
 func main() {
 	demoCpu()
 	demoDisk()
 	demoHost()
 	demoLoad()
+	demoMem()
 }

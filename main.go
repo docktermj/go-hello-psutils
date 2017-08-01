@@ -9,6 +9,7 @@ import (
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/net"
 )
 
 // Values updated via "go install -ldflags" parameters.
@@ -30,7 +31,7 @@ func demoCpu() {
 
 	// Per CPU statistics.
 
-	timesFormatString := "timeStats[%d]: \n\tCPU: %s \n\tGuest: %f \n\tGuestNice: %f \n\tIdle: %f \n\tIowait: %f \n\tIrq: %f \n\tNice: %f \n\tSoftirq: %f \n\tSteal: %f \n\tStolen: %f \n\tSystem: %f \n\tTotal: %f \n\tUser: %f\n"
+	timesFormatString := "timeStat[%d]: \n\tCPU: %s \n\tGuest: %f \n\tGuestNice: %f \n\tIdle: %f \n\tIowait: %f \n\tIrq: %f \n\tNice: %f \n\tSoftirq: %f \n\tSteal: %f \n\tStolen: %f \n\tSystem: %f \n\tTotal: %f \n\tUser: %f\n"
 
 	timeStats, _ := cpu.Times(true)
 	for i, timeStat := range timeStats {
@@ -54,10 +55,9 @@ func demoCpu() {
 
 	// Total statistics.  Note "false" in cpu.Times(false)
 
-	fmt.Printf("Total ")
-
 	timeStats, _ = cpu.Times(false)
 	for i, timeStat := range timeStats {
+		fmt.Printf("Total ")
 		fmt.Printf(timesFormatString,
 			i,
 			timeStat.CPU,
@@ -78,7 +78,7 @@ func demoCpu() {
 
 	// cpu.Info()
 
-	infoFormatString := "infoStats[%d]: \n\tCPU: %d \n\tCacheSize: %d \n\tCoreID: %s \n\tCores: %d \n\tFamily: %s \n\tFlags: %v \n\tMhz: %4.1f \n\tMicrocode: %s \n\tModel: %s \n\tModelName: %s \n\tPhysicalID: %s \n\tStepping: %d \n\tVendorID: %s\n"
+	infoFormatString := "infoStat[%d]: \n\tCPU: %d \n\tCacheSize: %d \n\tCoreID: %s \n\tCores: %d \n\tFamily: %s \n\tFlags: %v \n\tMhz: %4.1f \n\tMicrocode: %s \n\tModel: %s \n\tModelName: %s \n\tPhysicalID: %s \n\tStepping: %d \n\tVendorID: %s\n"
 
 	infoStats, _ := cpu.Info()
 	for i, infoStat := range infoStats {
@@ -113,9 +113,9 @@ func demoCpu() {
 		)
 	}
 
-	fmt.Printf("Total ")
 	percents, _ = cpu.Percent(interval, false)
 	for i, percent := range percents {
+		fmt.Printf("Total ")
 		fmt.Printf(percentFormatString,
 			i,
 			percent,
@@ -145,11 +145,11 @@ func demoDisk() {
 
 	// disk.IOCounters()
 
-	countersFormatString := "counters[%s]: \n\tIoTime: %d\n\tIopsInProgress: %d\n\tMergedReadCount: %d\n\tMergedWriteCount: %d\n\tName: %s\n\tReadBytes: %d\n\tReadCount: %d\n\tReadTime: %d\n\tSerialNumber: %s\n\tWeightedIO: %d\n\tWriteBytes: %d\n\tWriteCount: %d\n\tWriteTime: %d\n"
+	counterFormatString := "counter[%s]: \n\tIoTime: %d\n\tIopsInProgress: %d\n\tMergedReadCount: %d\n\tMergedWriteCount: %d\n\tName: %s\n\tReadBytes: %d\n\tReadCount: %d\n\tReadTime: %d\n\tSerialNumber: %s\n\tWeightedIO: %d\n\tWriteBytes: %d\n\tWriteCount: %d\n\tWriteTime: %d\n"
 
 	counters, _ := disk.IOCounters("sda", "sdb")
 	for key, value := range counters {
-		fmt.Printf(countersFormatString,
+		fmt.Printf(counterFormatString,
 			key,
 			value.IoTime,
 			value.IopsInProgress,
@@ -356,10 +356,137 @@ func demoMem() {
 	)
 }
 
+func demoNet() {
+
+	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoNet()")
+
+	// net.IOCounters()
+
+	iocounterFormatString := "iocounter[%d]: \n\tBytesRecv: %d\n\tBytesSent: %d\n\tDropin: %d\n\tDropout: %d\n\tErrin: %d\n\tErrout: %d\n\tFifoin: %d\n\tFifoout: %d\n\tName: %s\n\tPacketsRecv: %d\n\tPacketsSent: %d\n"
+
+	iocounters, _ := net.IOCounters(true)
+	for i, iocounter := range iocounters {
+		fmt.Printf(iocounterFormatString,
+			i,
+			iocounter.BytesRecv,
+			iocounter.BytesSent,
+			iocounter.Dropin,
+			iocounter.Dropout,
+			iocounter.Errin,
+			iocounter.Errout,
+			iocounter.Fifoin,
+			iocounter.Fifoout,
+			iocounter.Name,
+			iocounter.PacketsRecv,
+			iocounter.PacketsSent,
+		)
+	}
+
+	iocounters, _ = net.IOCounters(false)
+	for i, iocounter := range iocounters {
+		fmt.Printf("Total ")
+		fmt.Printf(iocounterFormatString,
+			i,
+			iocounter.BytesRecv,
+			iocounter.BytesSent,
+			iocounter.Dropin,
+			iocounter.Dropout,
+			iocounter.Errin,
+			iocounter.Errout,
+			iocounter.Fifoin,
+			iocounter.Fifoout,
+			iocounter.Name,
+			iocounter.PacketsRecv,
+			iocounter.PacketsSent,
+		)
+	}
+
+	// net.Connections()
+
+	connectionFormatString := "connection[%d]: \n\tFamily: %d\n\tFd: %d\n\tLaddr: %+v\n\tPid: %d\n\tRaddr: %+v\n\tStatus: %s\n\tType: %d\n\tUids: %+v\n"
+
+	connections, _ := net.Connections("all")
+	for i, connection := range connections {
+		fmt.Printf(connectionFormatString,
+			i,
+			connection.Family,
+			connection.Fd,
+			connection.Laddr,
+			connection.Pid,
+			connection.Raddr,
+			connection.Status,
+			connection.Type,
+			connection.Uids,
+		)
+	}
+
+	// net.ProtoCounters()
+
+	protoCounterFormatString := "protocounter[%d]: \n\tProtocol: %s\n\tStats:\n"
+	protoCounterStatsFormatString := "\t\tStats[\"%s\"]: %d\n"
+
+	protoCounters, _ := net.ProtoCounters([]string{})
+	for i, protoCounter := range protoCounters {
+		fmt.Printf(protoCounterFormatString,
+			i,
+			protoCounter.Protocol,
+		)
+		for key, value := range protoCounter.Stats {
+			fmt.Printf(protoCounterStatsFormatString,
+				key,
+				value,
+			)
+		}
+	}
+
+	// net.FilterCounters()
+
+	filterCounterFormatString := "filterCounter[%d]: \n\tConTrackCount: %d\n\tConTrackMaxt: %d\n"
+
+	filterCounters, _ := net.FilterCounters()
+	for i, filterCounter := range filterCounters {
+		fmt.Printf(filterCounterFormatString,
+			i,
+			filterCounter.ConnTrackCount,
+			filterCounter.ConnTrackMax,
+		)
+	}
+
+	// net.Interfaces()
+
+	interfaceCounterFormatString := "interface[%d]: \n\tAddrs: %+v\n\tFlags: %+v\n\tHardwareAddr: %s\n\tMTU: %d\n\tName: %s\n"
+
+	interfaces, _ := net.Interfaces()
+	for i, anInterface := range interfaces {
+		fmt.Printf(interfaceCounterFormatString,
+			i,
+			anInterface.Addrs,
+			anInterface.Flags,
+			anInterface.HardwareAddr,
+			anInterface.MTU,
+			anInterface.Name,
+		)
+	}
+
+	// net.Pids()
+
+	pidFormatString := "pid[%d]: %d\n"
+
+	pids, _ := net.Pids()
+	for i, pid := range pids {
+		fmt.Printf(pidFormatString,
+			i,
+			pid,
+		)
+	}
+
+}
+
 func main() {
 	demoCpu()
 	demoDisk()
 	demoHost()
 	demoLoad()
 	demoMem()
+	demoNet()
 }

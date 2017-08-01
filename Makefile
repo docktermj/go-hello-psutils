@@ -72,6 +72,7 @@ dependencies:
 	go get -u github.com/shirou/gopsutil/host
 	go get -u github.com/shirou/gopsutil/load
 	go get -u github.com/shirou/gopsutil/mem
+	go get -u github.com/shirou/gopsutil/net	
 
 
 .PHONY: clean

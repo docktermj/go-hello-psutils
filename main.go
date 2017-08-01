@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/disk"
 )
 
 // Values updated via "go install -ldflags" parameters.
@@ -26,75 +27,73 @@ func demoCpu() {
 
 	// Per CPU statistics.
 
-	timesFormatString := "timeStats[%d]: CPU: %-9s Guest: %3.1f GuestNice: %3.1f Idle: %7.1f Iowait: %6.1f Irq: %3.1f Nice: %4.1f Softirq: %3.1f Steal: %3.1f Stolen: %3.1f System: %5.1f Total: %8.1f User: %6.1f\n"
+	timesFormatString := "timeStats[%d]: \n\tCPU: %s \n\tGuest: %f \n\tGuestNice: %f \n\tIdle: %f \n\tIowait: %f \n\tIrq: %f \n\tNice: %f \n\tSoftirq: %f \n\tSteal: %f \n\tStolen: %f \n\tSystem: %f \n\tTotal: %f \n\tUser: %f\n"
 
 	timeStats, _ := cpu.Times(true)
-	for cpuNum := range timeStats {
+	for i, timeStat := range timeStats {
 		fmt.Printf(timesFormatString,
-			cpuNum,
-			timeStats[cpuNum].CPU,
-			timeStats[cpuNum].Guest,
-			timeStats[cpuNum].GuestNice,
-			timeStats[cpuNum].Idle,
-			timeStats[cpuNum].Iowait,
-			timeStats[cpuNum].Irq,
-			timeStats[cpuNum].Nice,
-			timeStats[cpuNum].Softirq,
-			timeStats[cpuNum].Steal,
-			timeStats[cpuNum].Stolen,
-			timeStats[cpuNum].System,
-			timeStats[cpuNum].Total(),
-			timeStats[cpuNum].User,
+			i,
+			timeStat.CPU,
+			timeStat.Guest,
+			timeStat.GuestNice,
+			timeStat.Idle,
+			timeStat.Iowait,
+			timeStat.Irq,
+			timeStat.Nice,
+			timeStat.Softirq,
+			timeStat.Steal,
+			timeStat.Stolen,
+			timeStat.System,
+			timeStat.Total(),
+			timeStat.User,
 		)
 	}
 
 	// Total statistics.  Note "false" in cpu.Times(false)
 
-	fmt.Printf("\nCPU total:\n")
+	fmt.Printf("Total ")
 
 	timeStats, _ = cpu.Times(false)
-	for cpuNum := range timeStats {
+	for i, timeStat := range timeStats {
 		fmt.Printf(timesFormatString,
-			cpuNum,
-			timeStats[cpuNum].CPU,
-			timeStats[cpuNum].Guest,
-			timeStats[cpuNum].GuestNice,
-			timeStats[cpuNum].Idle,
-			timeStats[cpuNum].Iowait,
-			timeStats[cpuNum].Irq,
-			timeStats[cpuNum].Nice,
-			timeStats[cpuNum].Softirq,
-			timeStats[cpuNum].Steal,
-			timeStats[cpuNum].Stolen,
-			timeStats[cpuNum].System,
-			timeStats[cpuNum].Total(),
-			timeStats[cpuNum].User,
+			i,
+			timeStat.CPU,
+			timeStat.Guest,
+			timeStat.GuestNice,
+			timeStat.Idle,
+			timeStat.Iowait,
+			timeStat.Irq,
+			timeStat.Nice,
+			timeStat.Softirq,
+			timeStat.Steal,
+			timeStat.Stolen,
+			timeStat.System,
+			timeStat.Total(),
+			timeStat.User,
 		)
 	}
 
 	// cpu.Info()
 
-	fmt.Printf("\nCPU Info:\n")
-
 	infoFormatString := "infoStats[%d]: \n\tCPU: %d \n\tCacheSize: %d \n\tCoreID: %s \n\tCores: %d \n\tFamily: %s \n\tFlags: %v \n\tMhz: %4.1f \n\tMicrocode: %s \n\tModel: %s \n\tModelName: %s \n\tPhysicalID: %s \n\tStepping: %d \n\tVendorID: %s\n"
 
 	infoStats, _ := cpu.Info()
-	for cpuNum := range timeStats {
+	for i, infoStat := range infoStats {
 		fmt.Printf(infoFormatString,
-			cpuNum,
-			infoStats[cpuNum].CPU,
-			infoStats[cpuNum].CacheSize,
-			infoStats[cpuNum].CoreID,
-			infoStats[cpuNum].Cores,
-			infoStats[cpuNum].Family,
-			infoStats[cpuNum].Flags,
-			infoStats[cpuNum].Mhz,
-			infoStats[cpuNum].Microcode,
-			infoStats[cpuNum].Model,
-			infoStats[cpuNum].ModelName,
-			infoStats[cpuNum].PhysicalID,
-			infoStats[cpuNum].Stepping,
-			infoStats[cpuNum].VendorID,
+			i,
+			infoStat.CPU,
+			infoStat.CacheSize,
+			infoStat.CoreID,
+			infoStat.Cores,
+			infoStat.Family,
+			infoStat.Flags,
+			infoStat.Mhz,
+			infoStat.Microcode,
+			infoStat.Model,
+			infoStat.ModelName,
+			infoStat.PhysicalID,
+			infoStat.Stepping,
+			infoStat.VendorID,
 		)
 	}
 
@@ -103,26 +102,90 @@ func demoCpu() {
 	percentFormatString := "percent[%d]: %f\n"
 	interval := time.Second
 
-	fmt.Printf("\nPercents(%d, true):\n", interval)
 	percents, _ := cpu.Percent(interval, true)
-	for cpuNum := range timeStats {
+	for i, percent := range percents {
 		fmt.Printf(percentFormatString,
-			cpuNum,
-			percents[cpuNum],
+			i,
+			percent,
 		)
 	}
 
-	fmt.Printf("\nPercents(%d, false):\n", interval)
+	fmt.Printf("Total ")
 	percents, _ = cpu.Percent(interval, false)
-	for cpuNum := range timeStats {
+	for i, percent := range percents {
 		fmt.Printf(percentFormatString,
-			cpuNum,
-			percents[cpuNum],
+			i,
+			percent,
 		)
 	}
 
 }
 
+func demoDisk() {
+
+	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoDisk()")
+
+	// disk.Partitions()
+
+	partitionFormatString := "partition[%d]: \n\tDevice: %s \n\tFstype: %s \n\tMountpoint: %s \n\tOpts: %s\n"
+
+	partitions, _ := disk.Partitions(true)
+	for i, partition := range partitions {
+		fmt.Printf(partitionFormatString,
+			i,
+			partition.Device,
+			partition.Fstype,
+			partition.Mountpoint,
+			partition.Opts,
+		)
+	}
+
+	// disk.IOCounters()
+
+	countersFormatString := "counters[%s]: \n\tIoTime: %d\n\tIopsInProgress: %d\n\tMergedReadCount: %d\n\tMergedWriteCount: %d\n\tName: %s\n\tReadBytes: %d\n\tReadCount: %d\n\tReadTime: %d\n\tSerialNumber: %s\n\tWeightedIO: %d\n\tWriteBytes: %d\n\tWriteCount: %d\n\tWriteTime: %d\n"
+
+	counters, _ := disk.IOCounters("sda", "sdb")
+	for key, value := range counters {
+		fmt.Printf(countersFormatString,
+			key,
+			value.IoTime,
+			value.IopsInProgress,
+			value.MergedReadCount,
+			value.MergedWriteCount,
+			value.Name,
+			value.ReadBytes,
+			value.ReadCount,
+			value.ReadTime,
+			value.SerialNumber,
+			value.WeightedIO,
+			value.WriteBytes,
+			value.WriteCount,
+			value.WriteTime,
+		)
+	}
+
+	// disk.Usage()
+
+	usageFormatString := "usage[%s]: \n\tFree: %d\n\tFstype: %s\n\tInodesFree: %d\n\tInodesTotal: %d\n\tInodesUsed: %d\n\tInodesUsedPercent: %.1f\n\tPath: %s\n\tTotal: %d\n\tUsed: %d\n\tUsedPercent: %.1f\n"
+
+	path := "/"
+	usage, _ := disk.Usage(path)
+	fmt.Printf(usageFormatString,
+		path,
+		usage.Free,
+		usage.Fstype,
+		usage.InodesFree,
+		usage.InodesTotal,
+		usage.InodesUsed,
+		usage.InodesUsedPercent,
+		usage.Path,
+		usage.Total,
+		usage.Used,
+		usage.UsedPercent,
+	)
+
+}
 func main() {
 	demoCpu()
+	demoDisk()
 }

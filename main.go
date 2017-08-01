@@ -6,6 +6,7 @@ import (
 
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/host"
 )
 
 // Values updated via "go install -ldflags" parameters.
@@ -185,7 +186,104 @@ func demoDisk() {
 	)
 
 }
+
+func demoHost() {
+
+	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoHost()")
+
+	// host.BootTime()
+
+	bootTime, _ := host.BootTime()
+	fmt.Printf("host.BootTime(): %d  (%s)\n", bootTime, time.Unix(int64(bootTime), 0))
+
+	// host.Uptime()
+
+	upTime, _ := host.Uptime()
+	fmt.Printf("host.Uptime(): %d\n\n", upTime)
+
+	// host.Info()
+
+	infoFormatString := "info[]: \n\tBootTime: %d\n\tHostID: %s\n\tHostname: %s\n\tKernelVersion: %s\n\tOS: %s\n\tPlatform: %s\n\tPlatformFamily: %s\n\tPlatformVersion: %s\n\tProcs: %d\n\tUptime: %d\n\tVirtualizationRole: %s\n\tVirtualizationSystem: %s\n"
+
+	info, _ := host.Info()
+	fmt.Printf(infoFormatString,
+		info.BootTime,
+		info.HostID,
+		info.Hostname,
+		info.KernelVersion,
+		info.OS,
+		info.Platform,
+		info.PlatformFamily,
+		info.PlatformVersion,
+		info.Procs,
+		info.Uptime,
+		info.VirtualizationRole,
+		info.VirtualizationSystem,
+	)
+
+	// host.Users()
+
+	userFormatString := "user[%d]: \n\tHost: %s\n\tStarted: %d (%s)\n\tTerminal: %s\n\tUser: %s\n"
+
+	users, _ := host.Users()
+	for i, user := range users {
+		fmt.Printf(userFormatString,
+			i,
+			user.Host,
+			user.Started,
+			time.Unix(int64(user.Started), 0),
+			user.Terminal,
+			user.User,
+		)
+	}
+
+	// host.PlatformInformation()
+
+	platformFormatString := "platform[]: \n\tPlatform: %s\n\tFamily: %s\n\tVersion: %s\n"
+
+	platform, family, version, _ := host.PlatformInformation()
+	fmt.Printf(platformFormatString,
+		platform,
+		family,
+		version,
+	)
+
+	// host.KernelVersion()
+
+	kernelFormatString := "kernel[]: \n\tVersion: %s\n"
+
+	version, _ = host.KernelVersion()
+	fmt.Printf(kernelFormatString,
+		version,
+	)
+
+	// host.Virtualization()
+
+	virtualizationFormatString := "virtualization[]: \n\tSystem: %s\n\tRole: %s\n"
+
+	system, role, _ := host.Virtualization()
+	fmt.Printf(virtualizationFormatString,
+		system,
+		role,
+	)
+
+	// host.SensorsTemperatures()
+
+	temperatureFormatString := "temperature[%d]: \n\tSensorKey: %s\n\tTemperature: %f\n"
+
+	temperatures, _ := host.SensorsTemperatures()
+	for i, temperature := range temperatures {
+		fmt.Printf(temperatureFormatString,
+			i,
+			temperature.SensorKey,
+			temperature.Temperature,
+		)
+	}
+
+}
+
 func main() {
-	demoCpu()
-	demoDisk()
+		demoCpu()
+		demoDisk()
+	demoHost()
 }

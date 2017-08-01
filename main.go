@@ -7,6 +7,7 @@ import (
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
+	"github.com/shirou/gopsutil/load"
 )
 
 // Values updated via "go install -ldflags" parameters.
@@ -282,8 +283,37 @@ func demoHost() {
 
 }
 
+func demoLoad() {
+
+	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoLoad()")
+
+	// load.Avg()
+
+	averageFormatString := "average[]: \n\tLoad1: %f\n\tLoad5: %f\n\tLoad15: %f\n"
+
+	average, _ := load.Avg()
+	fmt.Printf(averageFormatString,
+		average.Load1,
+		average.Load5,
+		average.Load15,
+	)
+
+	// load.Misc()
+
+	miscFormatString := "misc[]: \n\tCtxt: %d\n\tProcsBlocked: %d\n\tProcsRunning: %d\n"
+
+	misc, _ := load.Misc()
+	fmt.Printf(miscFormatString,
+		misc.Ctxt,
+		misc.ProcsBlocked,
+		misc.ProcsRunning,
+	)
+
+}
+
 func main() {
-		demoCpu()
-		demoDisk()
+	demoCpu()
+	demoDisk()
 	demoHost()
+	demoLoad()
 }

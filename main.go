@@ -253,12 +253,13 @@ func demoHost() {
 
 	// host.KernelVersion()
 
-	kernelFormatString := "kernel[]: \n\tVersion: %s\n"
-
-	version, _ = host.KernelVersion()
-	fmt.Printf(kernelFormatString,
-		version,
-	)
+	//  Bug reported: https://github.com/shirou/gopsutil/issues/409
+	//	kernelFormatString := "kernel[]: \n\tVersion: %s\n"
+	//
+	//	version, _ = host.KernelVersion()
+	//	fmt.Printf(kernelFormatString,
+	//		version,
+	//	)
 
 	// host.Virtualization()
 
@@ -471,15 +472,16 @@ func demoNet() {
 
 	// net.Pids()
 
-	pidFormatString := "pid[%d]: %d\n"
-
-	pids, _ := net.Pids()
-	for i, pid := range pids {
-		fmt.Printf(pidFormatString,
-			i,
-			pid,
-		)
-	}
+	//  Bug reported: https://github.com/shirou/gopsutil/issues/410
+	//	pidFormatString := "pid[%d]: %d\n"
+	//
+	//	pids, _ := net.Pids()
+	//	for i, pid := range pids {
+	//		fmt.Printf(pidFormatString,
+	//			i,
+	//			pid,
+	//		)
+	//	}
 
 }
 

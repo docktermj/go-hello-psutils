@@ -10,6 +10,7 @@ import (
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
+	"github.com/shirou/gopsutil/process"
 )
 
 // Values updated via "go install -ldflags" parameters.
@@ -103,7 +104,7 @@ func demoCpu() {
 	// cpu.Percent()
 
 	percentFormatString := "percent[%d]: %f\n"
-	interval := time.Second
+	interval := time.Microsecond
 
 	percents, _ := cpu.Percent(interval, true)
 	for i, percent := range percents {
@@ -482,6 +483,112 @@ func demoNet() {
 
 }
 
+func demoProcess() {
+
+	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoProcess()")
+
+	// process.Pids()
+
+	processFormatString := "pid[%d]: \n\tPid: %d\n\tcpuAffinity: %v\n\tcpuPercent: %f\n\tchildren: %+v\n\tcmdline: %s\n\tcmdlineSlice: %+v\n\tconnections: %+v\n\tcreateTime: %d\n\tcwd: %s\n\texe: %s\n\tgids: %+v\n\tioCounters: %+v\n\tioNice: %d\n\tisRunning: %t\n\tmemoryInfo: %+v\n\tmemoryInfoEx: %+v\n\tmemoryMapsTrue: %+v\n\tmemoryMapsFalse: %+v\n\tmemoryPercent: %f\n\tname: %s\n\tnetIoCountersTrue: %+v\n\tnetIoCountersFalse: %+v\n\tnice: %d\n\tnumCtxSwitches: %+v\n\tnumFds: %d\n\tnumThreads: %d\n\topenFiles: %+v\n\tparent: %+v\n\tpercent: %f\n\tpPid: %d\n\trLimit: %+v\n\tstatus: %s\n\tterminal: %s \n\tthreads: %+v\n\ttimes: %+v\n\tuids: %+v\n\tusername: %s\n"
+
+	pids, _ := process.Pids()
+	limit := 10 // Limit the number of processes printed.
+	for i, pid := range pids {
+		if i >= limit {
+			break
+		}
+
+		// Given a PID, create a process object.
+
+		aProcess, _ := process.NewProcess(pid)
+
+		// Extract data from process object.
+
+		cpuAffinity, _ := aProcess.CPUAffinity()
+		cpuPercent, _ := aProcess.CPUPercent()
+		children, _ := aProcess.Children()
+		cmdline, _ := aProcess.Cmdline()
+		cmdlineSlice, _ := aProcess.CmdlineSlice()
+		connections, _ := aProcess.Connections()
+		createTime, _ := aProcess.CreateTime()
+		cwd, _ := aProcess.Cwd()
+		exe, _ := aProcess.Exe()
+		gids, _ := aProcess.Gids()
+		ioCounters, _ := aProcess.IOCounters()
+		ioNice, _ := aProcess.IOnice()
+		isRunning, _ := aProcess.IsRunning()
+		//	    x := aProcess.Kill()
+		memoryInfo, _ := aProcess.MemoryInfo()
+		memoryInfoEx, _ := aProcess.MemoryInfoEx()
+		memoryMapsTrue, _ := aProcess.MemoryMaps(true)
+		memoryMapsFalse, _ := aProcess.MemoryMaps(false)
+		memoryPercent, _ := aProcess.MemoryPercent()
+		name, _ := aProcess.Name()
+		netIoCountersTrue, _ := aProcess.NetIOCounters(true)
+		netIoCountersFalse, _ := aProcess.NetIOCounters(false)
+		nice, _ := aProcess.Nice()
+		numCtxSwitches, _ := aProcess.NumCtxSwitches()
+		numFds, _ := aProcess.NumFDs()
+		numThreads, _ := aProcess.NumThreads()
+		openFiles, _ := aProcess.OpenFiles()
+		parent, _ := aProcess.Parent()
+		percent, _ := aProcess.Percent(time.Microsecond)
+		pPid, _ := aProcess.Ppid()
+		//	    x := aProcess.Resume()
+		rLimit, _ := aProcess.Rlimit()
+		//	    x := aProcess.SendSignal(...)
+		status, _ := aProcess.Status()
+		//	    x := aProcess.Suspend()
+		terminal, _ := aProcess.Terminal()
+		//	    x := aProcess.Terminate()
+		threads, _ := aProcess.Threads()
+		times, _ := aProcess.Times()
+		uids, _ := aProcess.Uids()
+		username, _ := aProcess.Username()
+
+		fmt.Printf(processFormatString,
+			i,
+			pid,
+			cpuAffinity,
+			cpuPercent,
+			children,
+			cmdline,
+			cmdlineSlice,
+			connections,
+			createTime,
+			cwd,
+			exe,
+			gids,
+			ioCounters,
+			ioNice,
+			isRunning,
+			memoryInfo,
+			memoryInfoEx,
+			memoryMapsTrue,
+			memoryMapsFalse,
+			memoryPercent,
+			name,
+			netIoCountersTrue,
+			netIoCountersFalse,
+			nice,
+			numCtxSwitches,
+			numFds,
+			numThreads,
+			openFiles,
+			parent,
+			percent,
+			pPid,
+			rLimit,
+			status,
+			terminal,
+			threads,
+			times,
+			uids,
+			username,
+		)
+	}
+}
+
 func main() {
 	demoCpu()
 	demoDisk()
@@ -489,4 +596,5 @@ func main() {
 	demoLoad()
 	demoMem()
 	demoNet()
+	demoProcess()
 }

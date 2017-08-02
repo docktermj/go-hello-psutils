@@ -19,24 +19,25 @@ var programName string = "unknown"
 var buildVersion string = "0.0.0"
 var buildIteration string = "0"
 
-func demoCpu() {
+func displayBanner(title string) {
+	fmt.Printf("\n---------- %s ------------------------------\n\n", title)
+}
 
-	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoCpu()")
-
-	// Number of CPUs.
-
+func demoCpuCounts() {
 	cpuCount, _ := cpu.Counts(true)
 	fmt.Printf("cpu.Counts(true): %d\n", cpuCount)
 	cpuCount, _ = cpu.Counts(false)
 	fmt.Printf("cpu.Counts(false): %d\n\n", cpuCount)
+}
 
-	// Per CPU statistics.
-
-	timesFormatString := "timeStat[%d]: \n\tCPU: %s \n\tGuest: %f \n\tGuestNice: %f \n\tIdle: %f \n\tIowait: %f \n\tIrq: %f \n\tNice: %f \n\tSoftirq: %f \n\tSteal: %f \n\tStolen: %f \n\tSystem: %f \n\tTotal: %f \n\tUser: %f\n"
-
-	timeStats, _ := cpu.Times(true)
+func demoCpuTimes(perCpu bool) {
+	formatString := "timeStat[%d]:\n\tCPU: %s \n\tGuest: %f\n\tGuestNice: %f\n\tIdle: %f\n\tIowait: %f\n\tIrq: %f\n\tNice: %f\n\tSoftirq: %f\n\tSteal: %f\n\tStolen: %f\n\tSystem: %f\n\tTotal: %f\n\tUser: %f\n"
+	timeStats, _ := cpu.Times(perCpu)
 	for i, timeStat := range timeStats {
-		fmt.Printf(timesFormatString,
+		if !perCpu {
+			fmt.Printf("Total ")
+		}
+		fmt.Printf(formatString,
 			i,
 			timeStat.CPU,
 			timeStat.Guest,
@@ -53,37 +54,13 @@ func demoCpu() {
 			timeStat.User,
 		)
 	}
+}
 
-	// Total statistics.  Note "false" in cpu.Times(false)
-
-	timeStats, _ = cpu.Times(false)
-	for i, timeStat := range timeStats {
-		fmt.Printf("Total ")
-		fmt.Printf(timesFormatString,
-			i,
-			timeStat.CPU,
-			timeStat.Guest,
-			timeStat.GuestNice,
-			timeStat.Idle,
-			timeStat.Iowait,
-			timeStat.Irq,
-			timeStat.Nice,
-			timeStat.Softirq,
-			timeStat.Steal,
-			timeStat.Stolen,
-			timeStat.System,
-			timeStat.Total(),
-			timeStat.User,
-		)
-	}
-
-	// cpu.Info()
-
-	infoFormatString := "infoStat[%d]: \n\tCPU: %d \n\tCacheSize: %d \n\tCoreID: %s \n\tCores: %d \n\tFamily: %s \n\tFlags: %v \n\tMhz: %4.1f \n\tMicrocode: %s \n\tModel: %s \n\tModelName: %s \n\tPhysicalID: %s \n\tStepping: %d \n\tVendorID: %s\n"
-
+func demoCpuInfo() {
+	formatString := "infoStat[%d]: \n\tCPU: %d \n\tCacheSize: %d \n\tCoreID: %s \n\tCores: %d \n\tFamily: %s \n\tFlags: %+v \n\tMhz: %4.1f \n\tMicrocode: %s \n\tModel: %s \n\tModelName: %s \n\tPhysicalID: %s \n\tStepping: %d \n\tVendorID: %s\n"
 	infoStats, _ := cpu.Info()
 	for i, infoStat := range infoStats {
-		fmt.Printf(infoFormatString,
+		fmt.Printf(formatString,
 			i,
 			infoStat.CPU,
 			infoStat.CacheSize,
@@ -100,42 +77,41 @@ func demoCpu() {
 			infoStat.VendorID,
 		)
 	}
-
-	// cpu.Percent()
-
-	percentFormatString := "percent[%d]: %f\n"
-	interval := time.Microsecond
-
-	percents, _ := cpu.Percent(interval, true)
-	for i, percent := range percents {
-		fmt.Printf(percentFormatString,
-			i,
-			percent,
-		)
-	}
-
-	percents, _ = cpu.Percent(interval, false)
-	for i, percent := range percents {
-		fmt.Printf("Total ")
-		fmt.Printf(percentFormatString,
-			i,
-			percent,
-		)
-	}
-
 }
 
-func demoDisk() {
+func demoCpuPercent(perCpu bool) {
+	formatString := "percent[%d]: %f\n"
+	interval := time.Second
+	percents, _ := cpu.Percent(interval, perCpu)
+	for i, percent := range percents {
+		if !perCpu {
+			fmt.Printf("Total ")
+		}
+		fmt.Printf(formatString,
+			i,
+			percent,
+		)
+	}
+}
 
-	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoDisk()")
+func demoCpu() {
+	displayBanner("Cpu")
+	demoCpuCounts()
+	demoCpuTimes(true)
+	demoCpuTimes(false)
+	demoCpuInfo()
+	demoCpuPercent(true)
+	demoCpuPercent(false)
+}
 
-	// disk.Partitions()
-
-	partitionFormatString := "partition[%d]: \n\tDevice: %s \n\tFstype: %s \n\tMountpoint: %s \n\tOpts: %s\n"
-
-	partitions, _ := disk.Partitions(true)
+func demoDiskPartitions(perCpu bool) {
+	formatString := "partition[%d]: \n\tDevice: %s \n\tFstype: %s \n\tMountpoint: %s \n\tOpts: %s\n"
+	partitions, _ := disk.Partitions(perCpu)
 	for i, partition := range partitions {
-		fmt.Printf(partitionFormatString,
+		if !perCpu {
+			fmt.Printf("Total ")
+		}
+		fmt.Printf(formatString,
 			i,
 			partition.Device,
 			partition.Fstype,
@@ -143,14 +119,13 @@ func demoDisk() {
 			partition.Opts,
 		)
 	}
+}
 
-	// disk.IOCounters()
-
-	counterFormatString := "counter[%s]: \n\tIoTime: %d\n\tIopsInProgress: %d\n\tMergedReadCount: %d\n\tMergedWriteCount: %d\n\tName: %s\n\tReadBytes: %d\n\tReadCount: %d\n\tReadTime: %d\n\tSerialNumber: %s\n\tWeightedIO: %d\n\tWriteBytes: %d\n\tWriteCount: %d\n\tWriteTime: %d\n"
-
+func demoDiskIOCounters() {
+	formatString := "counter[%s]: \n\tIoTime: %d\n\tIopsInProgress: %d\n\tMergedReadCount: %d\n\tMergedWriteCount: %d\n\tName: %s\n\tReadBytes: %d\n\tReadCount: %d\n\tReadTime: %d\n\tSerialNumber: %s\n\tWeightedIO: %d\n\tWriteBytes: %d\n\tWriteCount: %d\n\tWriteTime: %d\n"
 	counters, _ := disk.IOCounters("sda", "sdb")
 	for key, counter := range counters {
-		fmt.Printf(counterFormatString,
+		fmt.Printf(formatString,
 			key,
 			counter.IoTime,
 			counter.IopsInProgress,
@@ -167,14 +142,13 @@ func demoDisk() {
 			counter.WriteTime,
 		)
 	}
+}
 
-	// disk.Usage()
-
-	usageFormatString := "usage[%s]: \n\tFree: %d\n\tFstype: %s\n\tInodesFree: %d\n\tInodesTotal: %d\n\tInodesUsed: %d\n\tInodesUsedPercent: %.1f\n\tPath: %s\n\tTotal: %d\n\tUsed: %d\n\tUsedPercent: %.1f\n"
-
+func demoDiskUsage() {
+	formatString := "usage[%s]: \n\tFree: %d\n\tFstype: %s\n\tInodesFree: %d\n\tInodesTotal: %d\n\tInodesUsed: %d\n\tInodesUsedPercent: %.1f\n\tPath: %s\n\tTotal: %d\n\tUsed: %d\n\tUsedPercent: %.1f\n"
 	path := "/"
 	usage, _ := disk.Usage(path)
-	fmt.Printf(usageFormatString,
+	fmt.Printf(formatString,
 		path,
 		usage.Free,
 		usage.Fstype,
@@ -187,29 +161,30 @@ func demoDisk() {
 		usage.Used,
 		usage.UsedPercent,
 	)
-
 }
 
-func demoHost() {
+func demoDisk() {
+	displayBanner("Disk")
+	demoDiskPartitions(true)
+	demoDiskPartitions(false)
+	demoDiskIOCounters()
+	demoDiskUsage()
+}
 
-	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoHost()")
-
-	// host.BootTime()
-
+func demoHostBootTime() {
 	bootTime, _ := host.BootTime()
 	fmt.Printf("host.BootTime(): %d  (%s)\n", bootTime, time.Unix(int64(bootTime), 0))
+}
 
-	// host.Uptime()
-
+func demoHostUptime() {
 	upTime, _ := host.Uptime()
 	fmt.Printf("host.Uptime(): %d\n\n", upTime)
+}
 
-	// host.Info()
-
-	infoFormatString := "info[]: \n\tBootTime: %d\n\tHostID: %s\n\tHostname: %s\n\tKernelVersion: %s\n\tOS: %s\n\tPlatform: %s\n\tPlatformFamily: %s\n\tPlatformVersion: %s\n\tProcs: %d\n\tUptime: %d\n\tVirtualizationRole: %s\n\tVirtualizationSystem: %s\n"
-
+func demoHostInfo() {
+	formatString := "info[]: \n\tBootTime: %d\n\tHostID: %s\n\tHostname: %s\n\tKernelVersion: %s\n\tOS: %s\n\tPlatform: %s\n\tPlatformFamily: %s\n\tPlatformVersion: %s\n\tProcs: %d\n\tUptime: %d\n\tVirtualizationRole: %s\n\tVirtualizationSystem: %s\n"
 	info, _ := host.Info()
-	fmt.Printf(infoFormatString,
+	fmt.Printf(formatString,
 		info.BootTime,
 		info.HostID,
 		info.Hostname,
@@ -223,14 +198,13 @@ func demoHost() {
 		info.VirtualizationRole,
 		info.VirtualizationSystem,
 	)
+}
 
-	// host.Users()
-
-	userFormatString := "user[%d]: \n\tHost: %s\n\tStarted: %d (%s)\n\tTerminal: %s\n\tUser: %s\n"
-
+func demoHostUsers() {
+	formatString := "user[%d]: \n\tHost: %s\n\tStarted: %d (%s)\n\tTerminal: %s\n\tUser: %s\n"
 	users, _ := host.Users()
 	for i, user := range users {
-		fmt.Printf(userFormatString,
+		fmt.Printf(formatString,
 			i,
 			user.Host,
 			user.Started,
@@ -239,92 +213,91 @@ func demoHost() {
 			user.User,
 		)
 	}
+}
 
-	// host.PlatformInformation()
-
-	platformFormatString := "platform[]: \n\tPlatform: %s\n\tFamily: %s\n\tVersion: %s\n"
-
+func demoHostPlatformInformation() {
+	formatString := "platform[]: \n\tPlatform: %s\n\tFamily: %s\n\tVersion: %s\n"
 	platform, family, version, _ := host.PlatformInformation()
-	fmt.Printf(platformFormatString,
+	fmt.Printf(formatString,
 		platform,
 		family,
 		version,
 	)
+}
 
-	// host.KernelVersion()
-
+func demoHostKernelVersion() {
 	//  Bug reported: https://github.com/shirou/gopsutil/issues/409
-	//	kernelFormatString := "kernel[]: \n\tVersion: %s\n"
-	//
+	//	formatString := "kernel[]: \n\tVersion: %s\n"
 	//	version, _ = host.KernelVersion()
-	//	fmt.Printf(kernelFormatString,
+	//	fmt.Printf(formatString,
 	//		version,
 	//	)
+}
 
-	// host.Virtualization()
-
+func demoHostVirtualization() {
 	//  Bug reported: https://github.com/shirou/gopsutil/issues/411
-	//	virtualizationFormatString := "virtualization[]: \n\tSystem: %s\n\tRole: %s\n"
-	//
+	//	formatString := "virtualization[]: \n\tSystem: %s\n\tRole: %s\n"
 	//	system, role, _ := host.Virtualization()
-	//	fmt.Printf(virtualizationFormatString,
+	//	fmt.Printf(formatString,
 	//		system,
 	//		role,
 	//	)
+}
 
-	// host.SensorsTemperatures()
-
-	temperatureFormatString := "temperature[%d]: \n\tSensorKey: %s\n\tTemperature: %f\n"
-
+func demoHostSensorsTemperatures() {
+	formatString := "temperature[%d]: \n\tSensorKey: %s\n\tTemperature: %f\n"
 	temperatures, _ := host.SensorsTemperatures()
 	for i, temperature := range temperatures {
-		fmt.Printf(temperatureFormatString,
+		fmt.Printf(formatString,
 			i,
 			temperature.SensorKey,
 			temperature.Temperature,
 		)
 	}
-
 }
 
-func demoLoad() {
+func demoHost() {
+	displayBanner("Host")
+	demoHostBootTime()
+	demoHostUptime()
+	demoHostInfo()
+	demoHostUsers()
+	demoHostPlatformInformation()
+	demoHostKernelVersion()
+	demoHostVirtualization()
+	demoHostSensorsTemperatures()
+}
 
-	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoLoad()")
-
-	// load.Avg()
-
-	averageFormatString := "average[]: \n\tLoad1: %f\n\tLoad5: %f\n\tLoad15: %f\n"
-
+func demoLoadAvg() {
+	formatString := "average[]: \n\tLoad1: %f\n\tLoad5: %f\n\tLoad15: %f\n"
 	average, _ := load.Avg()
-	fmt.Printf(averageFormatString,
+	fmt.Printf(formatString,
 		average.Load1,
 		average.Load5,
 		average.Load15,
 	)
+}
 
-	// load.Misc()
-
-	miscFormatString := "misc[]: \n\tCtxt: %d\n\tProcsBlocked: %d\n\tProcsRunning: %d\n"
-
+func demoLoadMisc() {
+	formatString := "misc[]: \n\tCtxt: %d\n\tProcsBlocked: %d\n\tProcsRunning: %d\n"
 	misc, _ := load.Misc()
-	fmt.Printf(miscFormatString,
+	fmt.Printf(formatString,
 		misc.Ctxt,
 		misc.ProcsBlocked,
 		misc.ProcsRunning,
 	)
-
 }
 
-func demoMem() {
+func demoLoad() {
+	displayBanner("Load")
+	demoLoadAvg()
+	demoLoadMisc()
+}
 
-	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoMem()")
-
-	// mem.VirtualMemory()
-
-	virtualFormatString := "virtual[]: \n\tActive: %d\n\tAvailable: %d\n\tBuffers: %d\n\tCached: %d\n\tDirty: %d\n\tFree: %d\n\tInactive: %d\n\tPageTables: %d\n\tShared: %d\n\tSlab: %d\n\tSwapCached: %d\n\tTotal: %d\n\tUsed: %d\n\tUsedPercent: %f\n\tWired: %d\n\tWriteback: %d\n\tWritebackTmp: %d\n"
-
+func demoMemVirtualMemory() {
+	formatString := "virtual[]: \n\tActive: %d\n\tAvailable: %d\n\tBuffers: %d\n\tCached: %d\n\tDirty: %d\n\tFree: %d\n\tInactive: %d\n\tPageTables: %d\n\tShared: %d\n\tSlab: %d\n\tSwapCached: %d\n\tTotal: %d\n\tUsed: %d\n\tUsedPercent: %f\n\tWired: %d\n\tWriteback: %d\n\tWritebackTmp: %d\n"
 	virtual, _ := mem.VirtualMemory()
-	fmt.Printf(virtualFormatString,
+	fmt.Printf(formatString,
 		virtual.Active,
 		virtual.Available,
 		virtual.Buffers,
@@ -343,13 +316,12 @@ func demoMem() {
 		virtual.Writeback,
 		virtual.WritebackTmp,
 	)
+}
 
-	// mem.SwapMemory()
-
-	swapFormatString := "swap[]: \n\tFree: %d\n\tSin: %d\n\tSout: %d\n\tTotal: %d\n\tUsed: %d\n\tUsedPercent: %f\n"
-
+func demoMemSwapMemory() {
+	formatString := "swap[]: \n\tFree: %d\n\tSin: %d\n\tSout: %d\n\tTotal: %d\n\tUsed: %d\n\tUsedPercent: %f\n"
 	swap, _ := mem.SwapMemory()
-	fmt.Printf(swapFormatString,
+	fmt.Printf(formatString,
 		swap.Free,
 		swap.Sin,
 		swap.Sout,
@@ -359,17 +331,20 @@ func demoMem() {
 	)
 }
 
-func demoNet() {
+func demoMem() {
+	displayBanner("Mem")
+	demoMemVirtualMemory()
+	demoMemSwapMemory()
+}
 
-	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoNet()")
-
-	// net.IOCounters()
-
-	iocounterFormatString := "iocounter[%d]: \n\tBytesRecv: %d\n\tBytesSent: %d\n\tDropin: %d\n\tDropout: %d\n\tErrin: %d\n\tErrout: %d\n\tFifoin: %d\n\tFifoout: %d\n\tName: %s\n\tPacketsRecv: %d\n\tPacketsSent: %d\n"
-
+func demoNetIOCounters(perCpu bool) {
+	formatString := "iocounter[%d]: \n\tBytesRecv: %d\n\tBytesSent: %d\n\tDropin: %d\n\tDropout: %d\n\tErrin: %d\n\tErrout: %d\n\tFifoin: %d\n\tFifoout: %d\n\tName: %s\n\tPacketsRecv: %d\n\tPacketsSent: %d\n"
 	iocounters, _ := net.IOCounters(true)
 	for i, iocounter := range iocounters {
-		fmt.Printf(iocounterFormatString,
+		if !perCpu {
+			fmt.Printf("Total ")
+		}
+		fmt.Printf(formatString,
 			i,
 			iocounter.BytesRecv,
 			iocounter.BytesSent,
@@ -384,33 +359,13 @@ func demoNet() {
 			iocounter.PacketsSent,
 		)
 	}
+}
 
-	iocounters, _ = net.IOCounters(false)
-	for i, iocounter := range iocounters {
-		fmt.Printf("Total ")
-		fmt.Printf(iocounterFormatString,
-			i,
-			iocounter.BytesRecv,
-			iocounter.BytesSent,
-			iocounter.Dropin,
-			iocounter.Dropout,
-			iocounter.Errin,
-			iocounter.Errout,
-			iocounter.Fifoin,
-			iocounter.Fifoout,
-			iocounter.Name,
-			iocounter.PacketsRecv,
-			iocounter.PacketsSent,
-		)
-	}
-
-	// net.Connections()
-
-	connectionFormatString := "connection[%d]: \n\tFamily: %d\n\tFd: %d\n\tLaddr: %+v\n\tPid: %d\n\tRaddr: %+v\n\tStatus: %s\n\tType: %d\n\tUids: %+v\n"
-
+func demoNetConnections() {
+	formatString := "connection[%d]: \n\tFamily: %d\n\tFd: %d\n\tLaddr: %+v\n\tPid: %d\n\tRaddr: %+v\n\tStatus: %s\n\tType: %d\n\tUids: %+v\n"
 	connections, _ := net.Connections("all")
 	for i, connection := range connections {
-		fmt.Printf(connectionFormatString,
+		fmt.Printf(formatString,
 			i,
 			connection.Family,
 			connection.Fd,
@@ -422,15 +377,14 @@ func demoNet() {
 			connection.Uids,
 		)
 	}
+}
 
-	// net.ProtoCounters()
-
-	protoCounterFormatString := "protocounter[%d]: \n\tProtocol: %s\n\tStats:\n"
+func demoNetProtoCounters() {
+	formatString := "protocounter[%d]: \n\tProtocol: %s\n\tStats:\n"
 	protoCounterStatsFormatString := "\t\tStats[\"%s\"]: %d\n"
-
 	protoCounters, _ := net.ProtoCounters([]string{})
 	for i, protoCounter := range protoCounters {
-		fmt.Printf(protoCounterFormatString,
+		fmt.Printf(formatString,
 			i,
 			protoCounter.Protocol,
 		)
@@ -441,27 +395,25 @@ func demoNet() {
 			)
 		}
 	}
+}
 
-	// net.FilterCounters()
-
-	filterCounterFormatString := "filterCounter[%d]: \n\tConTrackCount: %d\n\tConTrackMaxt: %d\n"
-
+func demoNetFilterCounters() {
+	formatString := "filterCounter[%d]: \n\tConTrackCount: %d\n\tConTrackMaxt: %d\n"
 	filterCounters, _ := net.FilterCounters()
 	for i, filterCounter := range filterCounters {
-		fmt.Printf(filterCounterFormatString,
+		fmt.Printf(formatString,
 			i,
 			filterCounter.ConnTrackCount,
 			filterCounter.ConnTrackMax,
 		)
 	}
+}
 
-	// net.Interfaces()
-
-	interfaceCounterFormatString := "interface[%d]: \n\tAddrs: %+v\n\tFlags: %+v\n\tHardwareAddr: %s\n\tMTU: %d\n\tName: %s\n"
-
+func demoNetInterfaces() {
+	formatString := "interface[%d]: \n\tAddrs: %+v\n\tFlags: %+v\n\tHardwareAddr: %s\n\tMTU: %d\n\tName: %s\n"
 	interfaces, _ := net.Interfaces()
 	for i, anInterface := range interfaces {
-		fmt.Printf(interfaceCounterFormatString,
+		fmt.Printf(formatString,
 			i,
 			anInterface.Addrs,
 			anInterface.Flags,
@@ -470,32 +422,67 @@ func demoNet() {
 			anInterface.Name,
 		)
 	}
+}
 
-	// net.Pids()
-
+func demoNetPids() {
 	//  Bug reported: https://github.com/shirou/gopsutil/issues/410
-	//	pidFormatString := "pid[%d]: %d\n"
-	//
+	//	formatString := "pid[%d]: %d\n"
 	//	pids, _ := net.Pids()
 	//	for i, pid := range pids {
-	//		fmt.Printf(pidFormatString,
+	//		fmt.Printf(formatString,
 	//			i,
 	//			pid,
 	//		)
 	//	}
-
 }
 
-func demoProcess() {
+func demoNet() {
+	displayBanner("Net")
+	demoNetIOCounters(true)
+	demoNetIOCounters(false)
+	demoNetConnections()
+	demoNetProtoCounters()
+	demoNetFilterCounters()
+	demoNetInterfaces()
+	demoNetPids()
+}
 
-	fmt.Printf("\n---------- %s ------------------------------\n\n", "demoProcess()")
+func displayProcessRlimit(rLimit []process.RlimitStat) {
+	formatString := "\trlimit[%d]: %+v\n"
+	for i, value := range rLimit {
+		fmt.Printf(formatString,
+			i,
+			value,
+		)
+	}
+}
 
-	// process.Pids()
+func displayProcessIOCounterStat(netIOCounters []net.IOCountersStat) {
+	formatString := "\tnetIOCounters[%d]: %+v\n"
+	for i, value := range netIOCounters {
+		fmt.Printf(formatString,
+			i,
+			value,
+		)
+	}
+}
 
-	processFormatString := "pid[%d]: \n\tPid: %d\n\tcpuAffinity: %v\n\tcpuPercent: %f\n\tchildren: %+v\n\tcmdline: %s\n\tcmdlineSlice: %+v\n\tconnections: %+v\n\tcreateTime: %d\n\tcwd: %s\n\texe: %s\n\tgids: %+v\n\tioCounters: %+v\n\tioNice: %d\n\tisRunning: %t\n\tmemoryInfo: %+v\n\tmemoryInfoEx: %+v\n\tmemoryMapsTrue: %+v\n\tmemoryMapsFalse: %+v\n\tmemoryPercent: %f\n\tname: %s\n\tnetIoCountersTrue: %+v\n\tnetIoCountersFalse: %+v\n\tnice: %d\n\tnumCtxSwitches: %+v\n\tnumFds: %d\n\tnumThreads: %d\n\topenFiles: %+v\n\tparent: %+v\n\tpercent: %f\n\tpPid: %d\n\trLimit: %+v\n\tstatus: %s\n\tterminal: %s \n\tthreads: %+v\n\ttimes: %+v\n\tuids: %+v\n\tusername: %s\n"
+func displayProcessMemoryMaps(memoryMaps *[]process.MemoryMapsStat) {
+	if memoryMaps != nil {
+		formatString := "\tmemoryMap[%d]: %+v\n"
+		for i, value := range *memoryMaps {
+			fmt.Printf(formatString,
+				i,
+				value,
+			)
+		}
+	}
+}
 
-	pids, _ := process.Pids()
+func demoProcessPids() {
 	limit := 10 // Limit the number of processes printed.
+	formatString := "pid[%d]: \n\tPid: %d\n\tcpuAffinity: %v\n\tcpuPercent: %f\n\tchildren: %+v\n\tcmdline: %s\n\tcmdlineSlice: %+v\n\tconnections: %+v\n\tcreateTime: %d\n\tcwd: %s\n\texe: %s\n\tgids: %+v\n\tioCounters: %+v\n\tioNice: %d\n\tisRunning: %t\n\tmemoryInfo: %+v\n\tmemoryInfoEx: %+v\n\tmemoryPercent: %f\n\tname: %s\n\tnice: %d\n\tnumCtxSwitches: %+v\n\tnumFds: %d\n\tnumThreads: %d\n\topenFiles: %+v\n\tparent: %+v\n\tpercent: %f\n\tpPid: %d\n\tstatus: %s\n\tterminal: %s \n\tthreads: %+v\n\ttimes: %+v\n\tuids: %+v\n\tusername: %s\n"
+	pids, _ := process.Pids()
 	for i, pid := range pids {
 		if i >= limit {
 			break
@@ -520,7 +507,7 @@ func demoProcess() {
 		ioCounters, _ := aProcess.IOCounters()
 		ioNice, _ := aProcess.IOnice()
 		isRunning, _ := aProcess.IsRunning()
-		//	    x := aProcess.Kill()
+		// x := aProcess.Kill()
 		memoryInfo, _ := aProcess.MemoryInfo()
 		memoryInfoEx, _ := aProcess.MemoryInfoEx()
 		memoryMapsTrue, _ := aProcess.MemoryMaps(true)
@@ -537,19 +524,19 @@ func demoProcess() {
 		parent, _ := aProcess.Parent()
 		percent, _ := aProcess.Percent(time.Microsecond)
 		pPid, _ := aProcess.Ppid()
-		//	    x := aProcess.Resume()
+		// x := aProcess.Resume()
 		rLimit, _ := aProcess.Rlimit()
-		//	    x := aProcess.SendSignal(...)
+		// x := aProcess.SendSignal(...)
 		status, _ := aProcess.Status()
-		//	    x := aProcess.Suspend()
+		// x := aProcess.Suspend()
 		terminal, _ := aProcess.Terminal()
-		//	    x := aProcess.Terminate()
+		// x := aProcess.Terminate()
 		threads, _ := aProcess.Threads()
 		times, _ := aProcess.Times()
 		uids, _ := aProcess.Uids()
 		username, _ := aProcess.Username()
 
-		fmt.Printf(processFormatString,
+		fmt.Printf(formatString,
 			i,
 			pid,
 			cpuAffinity,
@@ -567,12 +554,8 @@ func demoProcess() {
 			isRunning,
 			memoryInfo,
 			memoryInfoEx,
-			memoryMapsTrue,
-			memoryMapsFalse,
 			memoryPercent,
 			name,
-			netIoCountersTrue,
-			netIoCountersFalse,
 			nice,
 			numCtxSwitches,
 			numFds,
@@ -581,7 +564,6 @@ func demoProcess() {
 			parent,
 			percent,
 			pPid,
-			rLimit,
 			status,
 			terminal,
 			threads,
@@ -589,7 +571,17 @@ func demoProcess() {
 			uids,
 			username,
 		)
+		displayProcessRlimit(rLimit)
+		displayProcessIOCounterStat(netIoCountersFalse)
+		displayProcessIOCounterStat(netIoCountersTrue)
+		displayProcessMemoryMaps(memoryMapsFalse)
+		displayProcessMemoryMaps(memoryMapsTrue)
 	}
+}
+
+func demoProcess() {
+	displayBanner("Process")
+	demoProcessPids()
 }
 
 func main() {

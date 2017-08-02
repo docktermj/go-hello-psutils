@@ -149,22 +149,22 @@ func demoDisk() {
 	counterFormatString := "counter[%s]: \n\tIoTime: %d\n\tIopsInProgress: %d\n\tMergedReadCount: %d\n\tMergedWriteCount: %d\n\tName: %s\n\tReadBytes: %d\n\tReadCount: %d\n\tReadTime: %d\n\tSerialNumber: %s\n\tWeightedIO: %d\n\tWriteBytes: %d\n\tWriteCount: %d\n\tWriteTime: %d\n"
 
 	counters, _ := disk.IOCounters("sda", "sdb")
-	for key, value := range counters {
+	for key, counter := range counters {
 		fmt.Printf(counterFormatString,
 			key,
-			value.IoTime,
-			value.IopsInProgress,
-			value.MergedReadCount,
-			value.MergedWriteCount,
-			value.Name,
-			value.ReadBytes,
-			value.ReadCount,
-			value.ReadTime,
-			value.SerialNumber,
-			value.WeightedIO,
-			value.WriteBytes,
-			value.WriteCount,
-			value.WriteTime,
+			counter.IoTime,
+			counter.IopsInProgress,
+			counter.MergedReadCount,
+			counter.MergedWriteCount,
+			counter.Name,
+			counter.ReadBytes,
+			counter.ReadCount,
+			counter.ReadTime,
+			counter.SerialNumber,
+			counter.WeightedIO,
+			counter.WriteBytes,
+			counter.WriteCount,
+			counter.WriteTime,
 		)
 	}
 

@@ -59,7 +59,13 @@ ENV PATH="${PATH}:/usr/local/go/bin:${GOPATH}/bin"
 ENV GO_PACKAGE="github.com/docktermj/${PROGRAM_NAME}"
 
 # Install dependencies.
-RUN go get github.com/docopt/docopt-go
+RUN	go get github.com/shirou/gopsutil/cpu && \
+	go get github.com/shirou/gopsutil/disk && \
+	go get github.com/shirou/gopsutil/host && \
+	go get github.com/shirou/gopsutil/load && \
+	go get github.com/shirou/gopsutil/mem && \
+	go get github.com/shirou/gopsutil/net && \
+	go get github.com/shirou/gopsutil/process
 
 # Copy local files from the Git repository.
 COPY . ${GOPATH}/src/${GO_PACKAGE}

@@ -263,13 +263,14 @@ func demoHost() {
 
 	// host.Virtualization()
 
-	virtualizationFormatString := "virtualization[]: \n\tSystem: %s\n\tRole: %s\n"
-
-	system, role, _ := host.Virtualization()
-	fmt.Printf(virtualizationFormatString,
-		system,
-		role,
-	)
+	//  Bug reported: https://github.com/shirou/gopsutil/issues/411
+	//	virtualizationFormatString := "virtualization[]: \n\tSystem: %s\n\tRole: %s\n"
+	//
+	//	system, role, _ := host.Virtualization()
+	//	fmt.Printf(virtualizationFormatString,
+	//		system,
+	//		role,
+	//	)
 
 	// host.SensorsTemperatures()
 

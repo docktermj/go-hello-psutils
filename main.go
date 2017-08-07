@@ -123,7 +123,7 @@ func demoDiskPartitions(perCpu bool) {
 
 func demoDiskIOCounters() {
 	formatString := "counter[%s]: \n\tIoTime: %d\n\tIopsInProgress: %d\n\tMergedReadCount: %d\n\tMergedWriteCount: %d\n\tName: %s\n\tReadBytes: %d\n\tReadCount: %d\n\tReadTime: %d\n\tSerialNumber: %s\n\tWeightedIO: %d\n\tWriteBytes: %d\n\tWriteCount: %d\n\tWriteTime: %d\n"
-	counters, _ := disk.IOCounters("sda", "sdb")
+	counters, _ := disk.IOCounters()
 	for key, counter := range counters {
 		fmt.Printf(formatString,
 			key,

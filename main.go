@@ -339,7 +339,7 @@ func demoMem() {
 
 func demoNetIOCounters(perCpu bool) {
 	formatString := "iocounter[%d]: \n\tBytesRecv: %d\n\tBytesSent: %d\n\tDropin: %d\n\tDropout: %d\n\tErrin: %d\n\tErrout: %d\n\tFifoin: %d\n\tFifoout: %d\n\tName: %s\n\tPacketsRecv: %d\n\tPacketsSent: %d\n"
-	iocounters, _ := net.IOCounters(true)
+	iocounters, _ := net.IOCounters(perCpu)
 	for i, iocounter := range iocounters {
 		if !perCpu {
 			fmt.Printf("Total ")

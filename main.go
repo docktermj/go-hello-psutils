@@ -226,22 +226,20 @@ func demoHostPlatformInformation() {
 }
 
 func demoHostKernelVersion() {
-	//  Bug reported: https://github.com/shirou/gopsutil/issues/409
-	//	formatString := "kernel[]: \n\tVersion: %s\n"
-	//	version, _ = host.KernelVersion()
-	//	fmt.Printf(formatString,
-	//		version,
-	//	)
+	formatString := "kernel[]: \n\tVersion: %s\n"
+	version, _ := host.KernelVersion()
+	fmt.Printf(formatString,
+		version,
+	)
 }
 
 func demoHostVirtualization() {
-	//  Bug reported: https://github.com/shirou/gopsutil/issues/411
-	//	formatString := "virtualization[]: \n\tSystem: %s\n\tRole: %s\n"
-	//	system, role, _ := host.Virtualization()
-	//	fmt.Printf(formatString,
-	//		system,
-	//		role,
-	//	)
+	formatString := "virtualization[]: \n\tSystem: %s\n\tRole: %s\n"
+	system, role, _ := host.Virtualization()
+	fmt.Printf(formatString,
+		system,
+		role,
+	)
 }
 
 func demoHostSensorsTemperatures() {
@@ -425,15 +423,14 @@ func demoNetInterfaces() {
 }
 
 func demoNetPids() {
-	//  Bug reported: https://github.com/shirou/gopsutil/issues/410
-	//	formatString := "pid[%d]: %d\n"
-	//	pids, _ := net.Pids()
-	//	for i, pid := range pids {
-	//		fmt.Printf(formatString,
-	//			i,
-	//			pid,
-	//		)
-	//	}
+	formatString := "pid[%d]: %d\n"
+	pids, _ := net.Pids()
+	for i, pid := range pids {
+		fmt.Printf(formatString,
+			i,
+			pid,
+		)
+	}
 }
 
 func demoNet() {

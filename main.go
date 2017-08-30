@@ -423,14 +423,15 @@ func demoNetInterfaces() {
 }
 
 func demoNetPids() {
-	formatString := "pid[%d]: %d\n"
-	pids, _ := net.Pids()
-	for i, pid := range pids {
-		fmt.Printf(formatString,
-			i,
-			pid,
-		)
-	}
+	//  Bug reported: https://github.com/shirou/gopsutil/issues/410
+	//	formatString := "pid[%d]: %d\n"
+	//	pids, _ := net.Pids()
+	//	for i, pid := range pids {
+	//		fmt.Printf(formatString,
+	//			i,
+	//			pid,
+	//		)
+	//	}
 }
 
 func demoNet() {
